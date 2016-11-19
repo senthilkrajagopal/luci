@@ -285,7 +285,7 @@ e.datatype = "uinteger"
 
 w = Map("wireless")
 
-local wnet = nw:get_wifinet("ra0.network1")
+local wnet = nw:get_wifinet("radio0.network1")
 local wdev = wnet and wnet:get_device()
 
 s = w:section(NamedSection, wnet.sid, "wifi-iface", translate("Wireless Settings"))
