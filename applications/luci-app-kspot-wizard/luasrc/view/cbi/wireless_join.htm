@@ -1,0 +1,16 @@
+<%+cbi/valueheader%>
+
+<%-
+	local ntm = require "luci.model.network"
+	local devices = ntm:get_wifidevs()
+-%>
+
+	<% for _, dev in ipairs(devices) do local nets = dev:get_wifinets() %>
+		<script>
+			function postWirelessJoin() {
+				$('<form action="<%=url('admin/network/wireless_join')%>" method="post"><input name="wizard" value="true" /><input name="device" value="<%=dev:name()%>" /><input name="token" value="<%=token%>" />').appendTo('body').submit();           
+			}
+		</script>
+		<input class="cbi-button cbi-button-find" style="width:100px" title="<%:Find and join network%>" value="<%:Scan%>" onclick="postWirelessJoin()"/>
+	<% end %>
+<%+cbi/valuefooter%>

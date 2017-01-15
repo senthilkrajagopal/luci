@@ -38,21 +38,28 @@ m.hidden = {
 	mode        = http.formvalue("mode"),
 	bssid       = http.formvalue("bssid"),
 	wep         = http.formvalue("wep"),
-	wpa_suites	= http.formvalue("wpa_suites"),
-	wpa_version = http.formvalue("wpa_version")
+	wpa_suites  = http.formvalue("wpa_suites"),
+	wpa_version = http.formvalue("wpa_version"),
+        wizard      = http.formvalue("wizard")
 }
 
-if iw and iw.mbssid_support then
-	replace = m:field(Flag, "replace", translate("Replace wireless configuration"),
-		translate("An additional network will be created if you leave this checked."))
+if m.hidden.wizard ~= "true" then 
+	if iw and iw.mbssid_support then
+		replace = m:field(Flag, "replace", translate("Replace wireless configuration"),
+			translate("An additional network will be created if you leave this checked."))
 
-	function replace.cfgvalue() return "0" end
+		function replace.cfgvalue() return "0" end
+	else
+		replace = m:field(DummyValue, "replace", translate("Replace wireless configuration"))
+		replace.default = translate("The hardware is not multi-SSID capable and the existing " ..
+			"configuration will be replaced if you proceed.")
+
+		function replace.formvalue() return "1" end
+	end
 else
 	replace = m:field(DummyValue, "replace", translate("Replace wireless configuration"))
-	replace.default = translate("The hardware is not multi-SSID capable and the existing " ..
-		"configuration will be replaced if you proceed.")
-
-	function replace.formvalue() return "1" end
+	replace.default = translate("Existing wireless configuration will be replaced if you proceed.")
+        function replace.formvalue() return "1" end	
 end
 
 if http.formvalue("wep") == "1" then
@@ -73,21 +80,37 @@ then
 	--m.hidden.wpa_suite = (tonumber(http.formvalue("wpa_version")) or 0) >= 2 and "psk2" or "psk"
 end
 
-newnet = m:field(Value, "_netname_new", translate("Name of the new network"),
-	translate("The allowed characters are: <code>A-Z</code>, <code>a-z</code>, " ..
-		"<code>0-9</code> and <code>_</code>"
-	))
+if m.hidden.wizard ~= "true" then
+	newnet = m:field(Value, "_netname_new", translate("Name of the new network"),
+		translate("The allowed characters are: <code>A-Z</code>, <code>a-z</code>, " ..
+			"<code>0-9</code> and <code>_</code>"
+		))
 
-newnet.default = m.hidden.mode == "Ad-Hoc" and "mesh" or "wwan"
-newnet.datatype = "uciname"
+	newnet.default = m.hidden.mode == "Ad-Hoc" and "mesh" or "wwan"
+	newnet.datatype = "uciname"
+else
+	newnet = m:field(DummyValue, "_netname_new", translate("Name of the new network"), translate("The network assigned to this wireless interface.")  
+        newnet.default =  m.hidden.mode == "Ad-Hoc" and "mesh" or "wwan"                                                                                                                                                                                     
+	newnet.datatype = "uciname"
+end
 
-if has_firewall then
-	fwzone = m:field(Value, "_fwzone",
-		translate("Create / Assign firewall-zone"),
-		translate("Choose the firewall zone you want to assign to this interface. Select <em>unspecified</em> to remove the interface from the associated zone or fill out the <em>create</em> field to define a new zone and attach the interface to it."))
+if m.hidden.wizard ~= "true" then
+	if has_firewall then
+		fwzone = m:field(Value, "_fwzone",
+			translate("Create / Assign firewall-zone"),
+			translate("Choose the firewall zone you want to assign to this interface. Select <em>unspecified</em> to remove the interface from the associated zone or fill out the <em>create</em> field to define a new zone and attach the interface to it."))
 
-	fwzone.template = "cbi/firewall_zonelist"
-	fwzone.default = m.hidden.mode == "Ad-Hoc" and "mesh" or "wan"
+		fwzone.template = "cbi/firewall_zonelist"
+		fwzone.default = m.hidden.mode == "Ad-Hoc" and "mesh" or "wan"
+	end
+else
+	if has_firewall then                                                                                                                                                                                                                                
+        	fwzone = m:field(DummyValue, "_fwzone",                                                                                                                                                                                                          
+                	translate("Assign firewall-zone"),                                                                                                                                                                                         
+	                translate("Firewall zone to assign to this interface"))
+                                                                                                                                                                                                                                                    
+        	fwzone.default = m.hidden.mode == "Ad-Hoc" and "mesh" or "wan"
+	end
 end
 
 function newnet.parse(self, section)
@@ -157,7 +180,11 @@ function newnet.parse(self, section)
 			uci:save("network")
 			uci:save("firewall")
 
-			luci.http.redirect(wnet:adminlink())
+			if m.hidden.wizard == "true" then
+				luci.http.redirect(luci.dispatcher.build_url("/admin/wizard/wizard"))
+			else
+				luci.http.redirect(wnet:adminlink())
+			end
 		end
 	end
 end

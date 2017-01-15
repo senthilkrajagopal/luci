@@ -117,6 +117,7 @@
 						<input type="hidden" name="bssid" value="<%=net.bssid%>" />
 						<input type="hidden" name="channel" value="<%=net.channel%>" />
 						<input type="hidden" name="wep" value="<%=net.encryption.wep and 1 or 0%>" />
+						<input type="hidden" name="wizard" value="<%=luci.http.formvalue("wizard")%>" />
 						<% if net.encryption.wpa then %>
 						<input type="hidden" name="wpa_version" value="<%=net.encryption.wpa%>" />
 						<% for _, v in ipairs(net.encryption.auth_suites) do %><input type="hidden" name="wpa_suites" value="<%=v%>" />
