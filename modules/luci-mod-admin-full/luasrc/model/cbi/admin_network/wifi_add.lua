@@ -89,7 +89,7 @@ if m.hidden.wizard ~= "true" then
 	newnet.default = m.hidden.mode == "Ad-Hoc" and "mesh" or "wwan"
 	newnet.datatype = "uciname"
 else
-	newnet = m:field(DummyValue, "_netname_new", translate("Name of the new network"), translate("The network assigned to this wireless interface.")  
+	newnet = m:field(DummyValue, "_netname_new", translate("Name of the new network"), translate("The network assigned to this wireless interface."))  
         newnet.default =  m.hidden.mode == "Ad-Hoc" and "mesh" or "wwan"                                                                                                                                                                                     
 	newnet.datatype = "uciname"
 end
