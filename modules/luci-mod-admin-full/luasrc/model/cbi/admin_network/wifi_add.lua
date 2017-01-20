@@ -80,7 +80,7 @@ then
 	--m.hidden.wpa_suite = (tonumber(http.formvalue("wpa_version")) or 0) >= 2 and "psk2" or "psk"
 end
 
-if m.hidden.wizard ~= "true" then
+if m.hidden.wizard ~= "true" or "1" == "1" then
 	newnet = m:field(Value, "_netname_new", translate("Name of the new network"),
 		translate("The allowed characters are: <code>A-Z</code>, <code>a-z</code>, " ..
 			"<code>0-9</code> and <code>_</code>"
@@ -94,7 +94,7 @@ else
 	newnet.datatype = "uciname"
 end
 
-if m.hidden.wizard ~= "true" then
+if m.hidden.wizard ~= "true" or "1" == "1" then
 	if has_firewall then
 		fwzone = m:field(Value, "_fwzone",
 			translate("Create / Assign firewall-zone"),
