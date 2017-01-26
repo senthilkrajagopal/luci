@@ -77,6 +77,7 @@ function mode.write(self, section, data)
         local net = ntm:del_network("wan")
         local net = ntm:del_network("wan6")
         local net = ntm:del_network("lan")
+	local net = ntm:del_network("wwan")
         x:set("network", "bridge", "interface")
         x:set("network", "bridge", "proto", "static")
         x:set("network", "bridge", "type", "bridge")
@@ -109,6 +110,7 @@ function mode.write(self, section, data)
         return x:save("wireless")
     elseif data == "router" then
         local net = ntm:del_network("bridge")
+	local net = ntm:del_network("wwan")
         x:set("network", "lan", "interface")
         x:set("network", "lan", "proto", "static")
         x:set("network", "lan", "type", "bridge")
@@ -133,14 +135,19 @@ function mode.write(self, section, data)
         x:save("wireless")
         return
     elseif data == "wrouter" then
-        local net = ntm:del_network("bridge") 
-        x:set("wireless", wifinet:name(), "network", "lan")    
-        if net then   
-            luci.sys.call("env -i /sbin/ifdown %q >/dev/null 2>/dev/null" % iface)
-            ntm:commit("network") 
-            ntm:commit("wireless")
-        end   
-        return x:save("wireless")      
+        local net = ntm:del_network("bridge")
+        x:set("network", "lan", "interface")
+        x:set("network", "lan", "proto", "static")
+        x:set("network", "lan", "type", "bridge")
+        x:set("network", "lan", "ifname", "eth0.1 eth0.2")
+        x:set("wireless", wifinet:name(), "network", "wan")
+        luci.sys.call("env -i /sbin/ifdown %q >/dev/null 2>/dev/null" % iface)
+        ntm:commit("network")
+        ntm:commit("wireless")
+        x:save("dhcp")
+        x:save("network")
+        x:save("wireless")
+        return
     end   
 end 
     
