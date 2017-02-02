@@ -21,21 +21,17 @@ nw.init()
 local net = nw:get_network("wan")     
        
 function getMode()    
-	local ntm = require "luci.model.network".init()     
-	local wifinet = ntm:get_wifinet("radio0.network1")  
-	if x:get("wireless", wifinet:name(), "mode") == "ap" then     
-		if x:get("network", "bridge") then      
-			return "bridge"     
-		else  
-			return "router"       
-		end   
-	else    
-		if x:get("network", "bridge") then    
-			return "cbridge"      
-		else  
-			return "wrouter"    
-		end   
-	end   
+        local ntm = require "luci.model.network".init()
+        local value = x:get("network", "mode")
+        if value == "bridge" then
+                return "bridge"
+        elseif value == "cbridge" then
+                return "cbridge"
+        elseif value == "wrouter" then
+                return "wrouter"
+        else
+                return "router"
+        end
 end   
     
 function getWifiMode()  
@@ -91,6 +87,7 @@ function mode.write(self, section, data)
         x:set("wireless", wifinet:name(), "ssid", "kloudspot")
         x:set("wireless", wifinet:name(), "key", "kloudspot")
         x:set("wireless", wifinet:name(), "encryption", "psk2")
+	x:set("network", "mode","bridge")
         luci.sys.call("env -i /sbin/ifdown %q >/dev/null 2>/dev/null" % iface)
         ntm:commit("network")
         ntm:commit("wireless")
@@ -99,15 +96,30 @@ function mode.write(self, section, data)
         x:save("wireless")
         return
     elseif data == "cbridge" then
-    	x:set("network", "bridge", "interface")       
-        x:set("network", "bridge", "proto", "static")   
-        x:set("network", "bridge", "type", "bridge")
-        x:set("network", "bridge", "ifname", "eth0.1 eth0.2") 
-        x:set("wireless", wifinet:name(), "network", "wwan bridge")
+        local net = ntm:del_network("bridge")
+        local net = ntm:del_network("wwan")
+        luci.sys.call("env -i /etc/init.d/relayd enable >/dev/null 2>/dev/null")
+        luci.sys.call("env -i /etc/init.d/relayd start >/dev/null 2>/dev/null")
+        x:set("network", "lan", "interface")
+        x:set("network", "lan", "proto", "static")
+        x:set("network", "lan", "type", "bridge")
+        x:set("network", "lan", "ifname", "eth0.1 eth0.2")
+        x:set("network", "wwan", "interface")
+        x:set("network", "wwan", "proto", "dhcp")
+        x:set("network", "bridge", "interface")
+        x:set("network", "bridge", "proto", "relay")
+        x:set("network", "bridge", "network", "lan wwan")
+        x:set("wireless", wifinet:name(), "network", "wwan")
         x:set("dhcp", "lan", "ignore", "1")
-        x:save("dhcp")    
-        x:save("network")   
-        return x:save("wireless")
+        x:set("dhcp", "wan", "ignore", "1")
+        x:set("network", "mode","cbridge")
+        luci.sys.call("env -i /etc/init.d/network restart >/dev/null 2>/dev/null")
+        ntm:commit("network")
+        ntm:commit("wireless")
+        x:save("dhcp")
+        x:save("network")
+        x:save("wireless")
+        return
     elseif data == "router" then
         local net = ntm:del_network("bridge")
 	local net = ntm:del_network("wwan")
@@ -127,6 +139,7 @@ function mode.write(self, section, data)
         x:set("wireless", wifinet:name(), "key", "kloudspot")
         x:set("wireless", wifinet:name(), "encryption", "psk2")
         x:set("dhcp", "bridge", "ignore", "0")
+	x:set("network", "mode","router")
         luci.sys.call("env -i /sbin/ifdown %q >/dev/null 2>/dev/null" % iface)
         ntm:commit("network")
         ntm:commit("wireless")
@@ -141,6 +154,7 @@ function mode.write(self, section, data)
         x:set("network", "lan", "type", "bridge")
         x:set("network", "lan", "ifname", "eth0.1 eth0.2")
         x:set("wireless", wifinet:name(), "network", "wan")
+	x:set("network", "mode","wrouter")
         luci.sys.call("env -i /sbin/ifdown %q >/dev/null 2>/dev/null" % iface)
         ntm:commit("network")
         ntm:commit("wireless")
