@@ -479,6 +479,21 @@ nat:depends("mode", wrouter)
 nat:value("0", translate("false"))     
 nat:value("1", translate("true"))      
 
+function nat.cfgvalue()
+    return x:get("network", "nat")
+end
+
+function nat.write(self, section, data)
+    x:set("network", "nat", data)
+    if data == "0" then
+                luci.sys.call("env -i /etc/init.d/firewall disable >/dev/null 2>/dev/null")
+                luci.sys.call("env -i /etc/init.d/firewall stop >/dev/null 2>/dev/null")
+    else
+                luci.sys.call("env -i /etc/init.d/firewall enable >/dev/null 2>/dev/null")
+                luci.sys.call("env -i /etc/init.d/firewall start >/dev/null 2>/dev/null")
+    end
+    return x:save("network")
+end
 
 ------------- 
 
