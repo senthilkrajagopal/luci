@@ -148,7 +148,7 @@ end
 
 --## function to set default password for new users ##--
 function setpasswd(username,password)
-  luci.sys.user.setpasswd(username, "openwrt")
+  luci.sys.user.setpasswd(username, "kloudspot")
 end
 
 --####################################### Ulitlity functions ###############################################--
