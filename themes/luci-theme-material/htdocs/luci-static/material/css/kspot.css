@@ -396,7 +396,7 @@ a:hover, a:focus {
 
 @media screen and (max-width: 1600px) {
     #logo {
-        width: calc(0% + 15rem);
+        width: calc(0% + 13rem);
     }
 }
 
