@@ -92,7 +92,7 @@
 	<br />
 
 	<%
-		if nixio.fs.access("/proc/net/ipv6_route") then
+		if nixio.fs.access("/proc/net/ipv6_route") and false then
 			style = true
 	%>
 	<fieldset class="cbi-section">

@@ -169,7 +169,7 @@ local function set_status()
 		st.network  = nil
 		st.value    = translate("There is no device assigned yet, please attach a network device in the \"Physical Settings\" tab")
 	else
-		st.template = "admin_network/iface_status"
+		st.template = "wizard/iface_status"
 		st.network  = arg[1]
 		st.value    = nil
 	end

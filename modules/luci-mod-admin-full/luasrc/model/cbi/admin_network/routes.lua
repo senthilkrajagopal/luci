@@ -55,7 +55,7 @@ routetype:value("anycast", "anycast")
 routetype.default = ""
 routetype.rmempty = true
 
-if fs.access("/proc/net/ipv6_route") then
+if fs.access("/proc/net/ipv6_route") and false then
 	s = m:section(TypedSection, "route6", translate("Static IPv6 Routes"))
 	s.addremove = true
 	s.anonymous = true

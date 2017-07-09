@@ -70,9 +70,9 @@
 		if (!confirm('<%:Really delete this interface? The deletion cannot be undone!\nYou might lose access to this device if you are connected via this interface.%>'))
 			return;
 
-		(new XHR()).post('<%=url('admin/network/iface_delete')%>/' + id, { token: '<%=token%>' },
+		(new XHR()).post('<%=url('admin/wizard/iface_delete')%>/' + id, { token: '<%=token%>' },
 			function(x) {
-				location.href = '<%=url('admin/network/network')%>';
+				location.href = '<%=url('admin/wizard/network')%>';
 			}
 		);
 	}
@@ -81,7 +81,7 @@
 	var wifidevs = <%=luci.http.write_json(netdevs)%>;
 	var arptable = <%=luci.http.write_json(arpcache)%>;
 
-	XHR.poll(5, '<%=url('admin/network/iface_status', table.concat(ifaces, ","))%>', null,
+	XHR.poll(5, '<%=url('admin/wizard/iface_status', table.concat(ifaces, ","))%>', null,
 		function(x, ifcs)
 		{
 			if (ifcs)
@@ -188,7 +188,7 @@
 					{
 						d.innerHTML = String.format(
 							'<em><%:Network without interfaces.%></em><br />' +
-							'<a href="<%=url("admin/network/network/%s")%>?tab.network.%s=physical"><%:Assign interfaces...%></a>',
+							'<a href="<%=url("admin/wizard/network/%s")%>?tab.network.%s=physical"><%:Assign interfaces...%></a>',
 								ifc.name, ifc.name
 						);
 					}

@@ -126,7 +126,7 @@ back.titleref = luci.dispatcher.build_url("admin", "network", "wireless")
 ]]
 
 st = s:taboption("general", DummyValue, "__status", translate("Status"))
-st.template = "admin_network/wifi_status"
+st.template = "wizard/wifi_status"
 st.ifname   = arg[1]
 
 en = s:taboption("general", Button, "__toggle")

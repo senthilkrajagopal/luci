@@ -21,10 +21,10 @@ function index()
 	  page.order  = 50
 	  page.index  = true
 		
-		page = entry({"admin", "users", "add_user"}, cbi("admin_users/add_user"), nil)
+		page = entry({"admin", "users", "add_user"}, cbi("admin_users/add_user", {hidesavebtn=true}), nil)
 		page.leaf = true
 
-		page = entry({"admin", "users", "edit_user"}, cbi("admin_users/edit_user"), nil)
+		page = entry({"admin", "users", "edit_user"}, cbi("admin_users/edit_user", {hidesavebtn=true}), nil)
 		page.leaf = true
 
 		page = entry({"admin", "users", "user_delete"}, post("user_delete"), nil)
@@ -33,7 +33,7 @@ function index()
 		page = entry({"admin", "users", "user_status"}, call("user_status"), nil)
 		page.leaf = true
 
-		page = entry({"admin", "users", "users"}, arcombine(cbi("admin_users/users"), cbi("admin_users/edit_user")), _("Edit Users"), 10)
+		page = entry({"admin", "users", "users"}, arcombine(cbi("admin_users/users"), cbi("admin_users/edit_user", {hidesavebtn=true})), _("Edit Users"), 10)
 		page.leaf   = true
 		page.subindex = true
 

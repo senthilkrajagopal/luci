@@ -61,6 +61,8 @@ network_subs:value("Switch", "Switch")
 network_subs:value("Dhcp", "DHCP and DNS")
 network_subs:value("Firewall", "Firewall")
 network_subs:value("Diagnostics", "Diagnostics")
+network_subs:value("Routes", "Routes")
+network_subs:value("QoS", "QoS")
 
 for i,v in pairs(menu) do
   o = s:option(Flag, i.."_menus", translate("Enable ".. firstToUpper(i).." Menus"))

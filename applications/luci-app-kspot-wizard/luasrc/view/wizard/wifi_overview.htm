@@ -157,7 +157,7 @@
 				st.innerHTML = '<em><%:Wireless is restarting...%></em>';
 		}
 
-		(new XHR()).post('<%=url('admin/network')%>/wireless_' + (reconnect ? 'reconnect' : 'shutdown') + '/' + id, { token: '<%=token%>' },
+		(new XHR()).post('<%=url('admin/wizard')%>/wireless_' + (reconnect ? 'reconnect' : 'shutdown') + '/' + id, { token: '<%=token%>' },
 			function(x)
 			{
 				if (s)
@@ -179,16 +179,16 @@
 		if (!confirm('<%:Really delete this wireless network? The deletion cannot be undone!\nYou might lose access to this device if you are connected via this network.%>'))
 			return;
 
-		(new XHR()).post('<%=url('admin/network/wireless_delete')%>/' + id, { token: '<%=token%>' },
+		(new XHR()).post('<%=url('admin/wizard/wireless_delete')%>/' + id, { token: '<%=token%>' },
 			function(x) {
-				location.href = '<%=url('admin/network/wireless')%>';
+				location.href = '<%=url('admin/wizard/wireless')%>';
 			}
 		);
 	}
 
 	var hosts = <%=luci.http.write_json(luci.sys.net.host_hints())%>;
 
-	XHR.poll(5, '<%=url('admin/network/wireless_status', table.concat(netlist, ","))%>', null,
+	XHR.poll(5, '<%=url('admin/wizard/wireless_status', table.concat(netlist, ","))%>', null,
 		function(x, st)
 		{
 			if (st)

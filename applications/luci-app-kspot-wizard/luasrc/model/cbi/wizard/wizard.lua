@@ -170,7 +170,7 @@ local function set_status_wan()
 		st.network  = nil
 		st.value    = translate("There is no device assigned yet, please attach a network device in the \"Physical Settings\" tab")
 	else
-		st.template = "admin_network/iface_status"
+		st.template = "wizard/iface_status"
 		st.network  = "wan" 
 		st.value    = nil
 	end
