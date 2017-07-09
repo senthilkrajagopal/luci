@@ -1667,6 +1667,10 @@ function wifinet.adminlink(self)
 	return dsp.build_url("admin", "network", "wireless", self.netid)
 end
 
+function wifinet.wizardlink(self)
+	return dsp.build_url("admin", "wizard", "wireless", self.netid)
+end
+
 function wifinet.get_network(self)
 	return self:get_networks()[1]
 end

@@ -297,6 +297,38 @@ function action_sysupgrade()
 			addr  = (#keep > 0) and "192.168.1.1" or nil
 		})
 		fork_exec("sleep 1; killall dropbear uhttpd; sleep 1; /sbin/sysupgrade %s %q" %{ keep, image_tmp })
+	elseif upgrade_avail and luci.http.formvalue("ota") then
+		--
+		-- OTA
+		--
+		local secretkey = luci.http.formvalue("secretkey") or ""
+		os.execute("/lib/dspot/dropspot.sh ota %q %q %s %s" %{ image_tmp_bin, image_tmp_verify, "false", secretkey })
+		local cammand = nixio.fs.readfile(image_tmp_verify)
+		if cammand and #cammand > 10 and string.sub(cammand,1,10)=="sysupgrade" then 
+				luci.template.render("admin_system/applyreboot", {
+				title = luci.i18n.translate("Upgrading..."),
+				msg   = luci.i18n.translate("The system is flashing now.<br /> DO NOT POWER OFF THE DEVICE!<br /> Wait a few minutes until you try to reconnect. It might be necessary to renew the address of your computer to reach the device again, depending on your settings."),
+				addr  = "192.168.1.1"
+			})
+			fork_exec("killall dropbear uhttpd; sleep 1; %s" % cammand)
+		else
+				luci.template.render("admin_system/flashops", {
+				reset_avail   = reset_avail,
+				upgrade_avail = upgrade_avail,
+				ota_invalid = true
+			})
+		end
+		
+		
+		
+	else
+		--
+		-- Overview
+		--
+		luci.template.render("admin_system/flashops", {
+			reset_avail   = reset_avail,
+			upgrade_avail = upgrade_avail
+		})
 	end
 end
 

@@ -7,8 +7,8 @@
 
 <%
 local fs   = require "nixio.fs"
-local has_ping6 = fs.access("/bin/ping6") or fs.access("/usr/bin/ping6")
-local has_traceroute6 = fs.access("/usr/bin/traceroute6")
+--local has_ping6 = fs.access("/bin/ping6") or fs.access("/usr/bin/ping6")
+--local has_traceroute6 = fs.access("/usr/bin/traceroute6")
 
 local dns_host = luci.config.diag and luci.config.diag.dns or "dev.openwrt.org"
 local ping_host = luci.config.diag and luci.config.diag.ping or "dev.openwrt.org"
@@ -90,7 +90,7 @@ local route_host = luci.config.diag and luci.config.diag.route or "dev.openwrt.o
 				<% else %>
 				<input type="button" value="<%:Traceroute%>" class="cbi-button cbi-button-apply" onclick="update_status(this.form.traceroute)" />
 				<% end %>
-				<% if not has_traceroute6 then %>
+				<% if not true and has_traceroute6 then %>
 					<p>&#160;</p>
 					<p><%:Install iputils-traceroute6 for IPv6 traceroute%></p>
 				<% end %>

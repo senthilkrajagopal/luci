@@ -1,59 +1,40 @@
 <%#
- Copyright 2008 Steven Barth <steven@midlink.org>
- Copyright 2008-2015 Jo-Philipp Wich <jow@openwrt.org>
- Licensed to the public under the Apache License 2.0.
+LuCI - Lua Configuration Interface
+Copyright 2008 Steven Barth <steven@midlink.org>
+Copyright 2008 Jo-Philipp Wich <xm@leipzig.freifunk.net>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+$Id$
+
 -%>
 
 <%+header%>
 
-<h2 name="content"><%:Flash operations%></h2>
-
-<ul class="cbi-tabmenu">
-	<li class="cbi-tab"><a href="#"><%:Actions%></a></li>
-	<li class="cbi-tab-disabled"><a href="<%=REQUEST_URI%>/backupfiles"><%:Configuration%></a></li>
-</ul>
+<h2><a id="content" name="content"><%:Flash operations%></a></h2>
 
 <fieldset class="cbi-section">
 
 	<fieldset class="cbi-section">
-		<legend><%:Backup / Restore%></legend>
-		<div class="cbi-section-descr"><%:Click "Generate archive" to download a tar archive of the current configuration files. To reset the firmware to its initial state, click "Perform reset" (only possible with squashfs images).%></div>
-		<div class="cbi-section-node">
-			<form class="inline" method="post" action="<%=url('admin/system/flashops/backup')%>">
-				<input type="hidden" name="token" value="<%=token%>" />
-				<div class="cbi-value<% if not reset_avail then %> cbi-value-last<% end %>">
-					<label class="cbi-value-title" for="image"><%:Download backup%>:</label>
-					<div class="cbi-value-field">
-						<input class="cbi-button cbi-button-apply" type="submit" name="backup" value="<%:Generate archive%>" />
-					</div>
-				</div>
-			</form>
-			<% if reset_avail then %>
-			<form class="inline" method="post" action="<%=url('admin/system/flashops/reset')%>">
-				<input type="hidden" name="token" value="<%=token%>" />
+		<legend><%:Reset%></legend>
+		<form method="post" action="<%=REQUEST_URI%>" enctype="multipart/form-data">
+			<div class="cbi-section-descr"><%:Click "Perform reset" to reset the firmware to its initial state, click "Perform reset" (only possible with squashfs images).%></div>
+			<div class="cbi-section-node">
+				<% if reset_avail then %>
 				<div class="cbi-value cbi-value-last">
 					<label class="cbi-value-title"><%:Reset to defaults%>:</label>
 					<div class="cbi-value-field">
 						<input onclick="return confirm('<%:Really reset all changes?%>')" class="cbi-button cbi-button-reset" type="submit" name="reset" value="<%:Perform reset%>" />
 					</div>
 				</div>
-			</form>
-			<% end %>
-		</div>
-		<br />
-		<div class="cbi-section-descr"><%:To restore configuration files, you can upload a previously generated backup archive here.%></div>
-		<div class="cbi-section-node">
-			<form class="inline" method="post" action="<%=url('admin/system/flashops/restore')%>" enctype="multipart/form-data">
-				<div class="cbi-value cbi-value-last">
-					<label class="cbi-value-title" for="archive"><%:Restore backup%>:</label>
-					<div class="cbi-value-field">
-						<input type="hidden" name="token" value="<%=token%>" />
-						<input type="file" name="archive" id="archive" />
-						<input type="submit" class="cbi-button cbi-input-apply" name="restore" value="<%:Upload archive...%>" />
-					</div>
-				</div>
-			</form>
-		</div>
+				<% end %>
+			</div>
+			<br />
+		</form>
 	</fieldset>
 
 	<br />
@@ -61,9 +42,8 @@
 	<fieldset class="cbi-section">
 		<legend><%:Flash new firmware image%></legend>
 		<% if upgrade_avail then %>
-			<form method="post" action="<%=url('admin/system/flashops/sysupgrade')%>" enctype="multipart/form-data">
-				<input type="hidden" name="token" value="<%=token%>" />
-				<div class="cbi-section-descr"><%:Upload a sysupgrade-compatible image here to replace the running firmware. Check "Keep settings" to retain the current configuration (requires a compatible firmware image).%></div>
+			<form method="post" action="<%=REQUEST_URI%>" enctype="multipart/form-data">
+				<div class="cbi-section-descr"><%:Upload a sysupgrade-compatible image here to replace the running firmware. Check "Keep settings" to retain the current configuration (requires an OpenWrt compatible firmware image).%></div>
 				<div class="cbi-section-node">
 					<div class="cbi-value">
 						<label class="cbi-value-title" for="keep"><%:Keep settings%>:</label>
@@ -84,10 +64,40 @@
 				<% end %>
 			</form>
 		<% else %>
-			<div class="cbi-section-descr"><%:Sorry, there is no sysupgrade support present; a new firmware image must be flashed manually. Please refer to the wiki for device specific install instructions.%></div>
+			<div class="cbi-section-descr"><%:Sorry, there is no sysupgrade support present, a new firmware image must be flashed manually. Please refer to the OpenWrt wiki for device specific install instructions.%></div>
 		<% end %>
 	</fieldset>
+	
+	 <br />                                                                                                                                                                                   
+	<br /> 
 
+        <fieldset class="cbi-section">                                                                                                                                                           
+                <legend><%:Over The Air (OTA) firmware upgrade%></legend>                                                                                                                                   
+                <% if upgrade_avail then %>                                                                                                                                                      
+                        <form method="post" action="<%=REQUEST_URI%>" enctype="multipart/form-data">                                                                                             
+                                <div class="cbi-section-descr"><%:WARNING: This action may permanentely brick your router, do it on own risk. Enter Secret Key only if it has been provided by the ISP or Seller. DO NOT POWER OFF THE DEVICE %></div> 
+                                <div class="cbi-section-node">                                                                                                                                   
+                                        <div class="cbi-value cbi-value-last<% if image_invalid then %> cbi-value-error<% end %>">                                                               
+                                                <label class="cbi-value-title" for="secretkey"><%:Secret Key (Optional)%>:</label>                                                                                   
+                                                <div class="cbi-value-field">                                                                                                                    
+                                                        <input type="text" name="secretkey" id="secretkey" />                                                                                            
+                                        		</div>	               
+						
+												<br/>
+												<label class="cbi-value-title" ></label>
+												<div class="cbi-value-field">
+														<input onclick="return confirm('<%:Really want to upgrade? <BR/>Firmware download may take some time depened on your internet speed, please do not refresh or resubmit again.%>')" type="submit" class="cbi-button cbi-input-apply" name="ota" value="<%:Upgarde with latest Version...%>" />                                                   
+                                                </div>                                                                                                                                           
+                                        </div>                                                                                                                                                   
+                                </div> 
+                                <% if ota_invalid then %>
+									<div class="cbi-section-error"><%:Sorry, either there is no OTA firmware avaialble for this device or the Secret key (if provided) is invalid %></div>
+								<% end %>                                                                                                                                                          
+                        </form>                                                                                                                                                                  
+                <% else %>                                                                                                                                                                       
+                        <div class="cbi-section-descr"><%:Sorry, there is no OTA support available.%></div>
+                <% end %>                                                                                                                                                                        
+        </fieldset>  
 </fieldset>
 
 <%+footer%>

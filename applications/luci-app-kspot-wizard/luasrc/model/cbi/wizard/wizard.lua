@@ -161,9 +161,9 @@ end
 
 local ifc = net:get_interface()
 
-st = s:option(DummyValue, "__status", translate("Status"))
+st = s:option(DummyValue, "__status_wan", translate("Status"))
 
-local function set_status()
+local function set_status_wan()
 	-- if current network is empty, print a warning
 	if not net:is_floating() and net:is_empty() then
 		st.template = "cbi/dvalue"
@@ -176,8 +176,8 @@ local function set_status()
 	end
 end
 
-m.on_init = set_status
-m.on_after_save = set_status
+m.on_init = set_status_wan
+m.on_after_save = set_status_wan
 
 p = s:option(ListValue, "proto", translate("Protocol"))
 p.default = net:proto()
@@ -280,4 +280,69 @@ e:value("255.255.255.0")
 e:value("255.255.0.0")
 e:value("255.0.0.0")
 
-return m, l
+d = Map("dhcp")
+
+s = d:section(NamedSection, "lan",  "dhcp", translate("LAN DHCP"))
+s.addremove = false
+s.anonymous = false
+s.optional = false
+
+e = s:option(Flag, "ignore",
+			translate("Ignore interface"),
+			translate("Disable <abbr title=\"Dynamic Host Configuration Protocol\">DHCP</abbr> for " ..
+				"this interface."))
+
+e = s:option(Value, "start", translate("Start"),
+			translate("Lowest leased address as offset from the network address."))
+e.optional = true
+e.datatype = "uinteger"
+e.default = "100"
+
+e = s:option(Value, "limit", translate("Limit"),
+			translate("Maximum number of leased addresses."))
+e.optional = true
+e.datatype = "uinteger"
+e.default = "150"
+
+e = s:option(Value, "leasetime", translate("Leasetime"),
+			translate("Expiry time of leased addresses, minimum is 2 Minutes (<code>2m</code>)."))
+e.rmempty = true
+e.default = "12h"
+
+w = Map("wireless")
+
+local wnet = nw:get_wifinet("radio0.network1")
+local wdev = wnet and wnet:get_device()
+
+s = w:section(NamedSection, wnet.sid, "wifi-iface", translate("Wireless Settings"))
+s.addremove = false
+s.anonymous = false
+s.optional = false
+
+e = s:option(Value, "ssid", translate("SSID"))
+e.default = "Kloudspot"
+e.rmempty = false
+e.optional = true
+
+e = s:option(ListValue, "encryption", translate("Encryption"))
+e.override_values = true
+e.override_depends = true
+e.default = "none"
+e.rmempty = false
+e.optional = true
+e:value("none", "No Encryption")
+e:value("psk", "WPA-PSK")
+e:value("psk2", "WPA2-PSK")
+e:value("psk-mixed", "WPA-PSK/WPA2-PSK Mixed Mode")
+
+e = s:option(Value, "key", translate("Key"))
+e:depends("encryption", "psk")
+e:depends("encryption", "psk2")
+e:depends("encryption", "psk+psk2")
+e:depends("encryption", "psk-mixed")
+e.datatype = "wpakey"
+e.rmempty = true
+e.password = true
+
+return m, l, d, w
+
