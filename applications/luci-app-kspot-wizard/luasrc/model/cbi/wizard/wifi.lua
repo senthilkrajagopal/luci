@@ -365,6 +365,7 @@ network = s:taboption("general", Value, "network", translate("Network"),
 network.rmempty = true
 network.template = "cbi/network_netlist"
 network.widget = "checkbox"
+network.nocreate = true
 network.novirtual = true
 
 function network.write(self, section, value)

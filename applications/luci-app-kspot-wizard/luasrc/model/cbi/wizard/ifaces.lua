@@ -233,6 +233,7 @@ if has_firewall then
 	fwzone.template = "cbi/firewall_zonelist"
 	fwzone.network = arg[1]
 	fwzone.rmempty = false
+	fwzone.nocreate = true
 
 	function fwzone.cfgvalue(self, section)
 		self.iface = section
