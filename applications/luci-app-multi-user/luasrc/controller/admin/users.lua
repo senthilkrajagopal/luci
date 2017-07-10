@@ -57,7 +57,7 @@ function index()
 	  page.order  = 50
 	  page.index  = true
 
-	  	page = entry({"admin", "users", "passwd"}, cbi("admin_users/passwd"), _("Password"), 10)
+	  	page = entry({"admin", "wizard", "passwd"}, cbi("admin_users/passwd"), _("Password"), 25)
 	end
 
 

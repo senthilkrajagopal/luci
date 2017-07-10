@@ -10,7 +10,7 @@ function index()
            local usw = require "luci.users"
            local user = dsp.get_user()
 	   if user == "root" then return true end
-	   local name = "Network"
+	   local name = "network"
 
 	   local menu = {}
 	   menu = usw.hide_menus(user,name) or {}
@@ -40,8 +40,8 @@ function index()
 		arcombine(cbi("firewall/rules"), cbi("firewall/rule-details")),
 		_("Traffic Rules"), 30).leaf = true
 
-	entry({"admin", "network", "firewall", "custom"},
-		cbi("firewall/custom"),
-		_("Custom Rules"), 40).leaf = true
+--	entry({"admin", "network", "firewall", "custom"},
+--		cbi("firewall/custom"),
+--		_("Custom Rules"), 40).leaf = true
 	end
 end
