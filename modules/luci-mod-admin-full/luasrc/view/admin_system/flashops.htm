@@ -76,7 +76,13 @@ $Id$
                 <% if upgrade_avail then %>                                                                                                                                                      
                         <form method="post" action="<%=REQUEST_URI%>" enctype="multipart/form-data">                                                                                             
                                 <div class="cbi-section-descr"><%:WARNING: This action may permanentely brick your router, do it on own risk. Enter Secret Key only if it has been provided by the ISP or Seller. DO NOT POWER OFF THE DEVICE %></div> 
-                                <div class="cbi-section-node">                                                                                                                                   
+                                <div class="cbi-section-node"> 
+                                		<div class="cbi-value">
+											<label class="cbi-value-title" for="otakeep"><%:Keep settings%>:</label>
+											<div class="cbi-value-field">
+												<input type="checkbox" name="otakeep" id="otakeep" />
+											</div>
+										</div>                                                                                                                                  
                                         <div class="cbi-value cbi-value-last<% if image_invalid then %> cbi-value-error<% end %>">                                                               
                                                 <label class="cbi-value-title" for="secretkey"><%:Secret Key (Optional)%>:</label>                                                                                   
                                                 <div class="cbi-value-field">                                                                                                                    

@@ -235,7 +235,9 @@ function action_sysupgrade()
 	local fs = require "nixio.fs"
 	local http = require "luci.http"
 	local image_tmp = "/tmp/firmware.img"
-
+	local image_tmp_bin   = "/tmp/firmware.bin"
+	local image_tmp_verify = "/tmp/firmware.verify"
+	
 	local fp
 	http.setfilehandler(
 		function(meta, chunk, eof)
@@ -301,8 +303,10 @@ function action_sysupgrade()
 		--
 		-- OTA
 		--
+		
+		local otakeep = (http.formvalue("otakeep") == "1") or "false"
 		local secretkey = luci.http.formvalue("secretkey") or ""
-		os.execute("/lib/dspot/dropspot.sh ota %q %q %s %s" %{ image_tmp_bin, image_tmp_verify, "false", secretkey })
+		os.execute("/lib/dspot/dropspot.sh ota %s %s %q %q" %{ secretkey, otakeep, image_tmp_bin, image_tmp_verify})
 		local cammand = nixio.fs.readfile(image_tmp_verify)
 		if cammand and #cammand > 10 and string.sub(cammand,1,10)=="sysupgrade" then 
 				luci.template.render("admin_system/applyreboot", {
