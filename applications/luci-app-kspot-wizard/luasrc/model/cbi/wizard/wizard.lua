@@ -280,6 +280,11 @@ e:value("255.255.255.0")
 e:value("255.255.0.0")
 e:value("255.0.0.0")
 
+e = s:option(Value, "gateway", translate("<abbr title=\"Internet Protocol Version 4\">IPv4</abbr>-Address"))
+e.rmempty = true
+e.optional = true
+e.datatype = "ip4addr"
+
 d = Map("dhcp")
 
 s = d:section(NamedSection, "lan",  "dhcp", translate("LAN DHCP"))
